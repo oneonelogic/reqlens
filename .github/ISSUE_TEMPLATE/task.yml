@@ -1,0 +1,32 @@
+name: Task
+description: One unit of work under a story.
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: input
+    id: parent
+    attributes:
+      label: Parent story
+      placeholder: "#12"
+    validations:
+      required: true
+  - type: textarea
+    id: work
+    attributes:
+      label: What needs doing
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      value: |
+        - [ ] Builds clean, no new warnings
+        - [ ] Tests cover the behaviour
+        - [ ] No real identifiers or client material
+  - type: checkboxes
+    id: pairing
+    attributes:
+      label: Pairing
+      options:
+        - label: Glenn writes this one by hand (interview-critical path)
