@@ -7,11 +7,15 @@ Every change goes on a branch named for its issue:
 
 ```
 feature/<issue>-<slug>     new capability      feature/14-npi-luhn-validator
-fix/<issue>-<slug>         defect
-chore/<slug>               tooling, docs, CI
+fix/<issue>-<slug>         defect              fix/22-textract-page-order
+chore/<slug>               tooling, docs, CI   chore/scrum-scaffolding
 ```
 
-Open a PR back to `master`, link the issue with `Closes #n`, squash on merge.
+Feature and fix branches always carry their issue number and close it with `Closes #n`.
+Chore branches are the exception: housekeeping that no story asked for does not need an
+issue, and its PR has no `Closes` line.
+
+Open a PR back to `master`, squash on merge.
 
 ## Stories and tasks
 A **story** is a vertical slice someone can watch working. A **task** is one unit of
