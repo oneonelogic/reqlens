@@ -1,0 +1,48 @@
+# ---- Private planning docs: never published ----
+CLAUDE.md
+HANDOFF.md
+STATUS.md
+AWS-DEMO-APP-PLAN.md
+AWS-UPSKILL-PLAN.md
+.claude/
+notes/
+
+# ---- .NET ----
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+artifacts/
+publish/
+*.nupkg
+TestResults/
+coverage*.xml
+*.received.*
+
+# ---- AWS Lambda packaging ----
+*.zip
+aws-lambda-tools-defaults.json.local
+
+# ---- Terraform ----
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+!example.tfvars
+crash.log
+override.tf
+override.tf.json
+
+# ---- Secrets / local config ----
+.env
+.env.*
+appsettings.Local.json
+appsettings.Development.json
+*.pem
+
+# ---- macOS ----
+.DS_Store
