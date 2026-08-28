@@ -1,0 +1,33 @@
+name: Story
+description: A vertical slice of user-visible value.
+title: "[Story] "
+labels: ["story"]
+body:
+  - type: textarea
+    id: value
+    attributes:
+      label: Value
+      description: Who gets what, and why it matters.
+      placeholder: As a lab reviewer, I can see which extracted fields the model was unsure about, so I only re-key what actually needs it.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable outcomes. If you cannot demo it, it is not a criterion.
+      value: |
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
+  - type: input
+    id: slice
+    attributes:
+      label: Slice
+      placeholder: "1"
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Design constraints, risks, links.
