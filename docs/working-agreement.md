@@ -3,7 +3,7 @@
 ## Branches
 `master` is always buildable. Nothing lands on it directly.
 
-Every change goes on a branch named for its issue:
+Feature and fix changes go on issue-numbered branches; chore changes use `chore/<slug>`:
 
 ```
 feature/<issue>-<slug>     new capability      feature/14-npi-luhn-validator

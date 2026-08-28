@@ -1,7 +1,7 @@
 ## What changed
 
 ## Story
-Closes #
+Closes #  <!-- required for feature/fix PRs; delete this section for chores -->
 
 ## Checks
 - [ ] `dotnet build ReqLens.slnx` clean
