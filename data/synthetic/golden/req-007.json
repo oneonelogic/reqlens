@@ -1,0 +1,29 @@
+{
+  "document": "req-007.pdf",
+  "tenant": "bluffcreek",
+  "layout": "Compact",
+  "defects": [
+    "HandwrittenNote"
+  ],
+  "fields": {
+    "ordering_provider_name": "Renata Vasquez-Lin, MD",
+    "ordering_provider_npi": "1524877085",
+    "patient_last_name": "Gallagher-Sy",
+    "patient_first_name": "Coralie",
+    "patient_dob": "1985-07-05",
+    "patient_sex": "F",
+    "patient_mrn": "MRN666950",
+    "test_panel_code": "GXP-120",
+    "diagnosis_code": "E78.01",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/08/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}

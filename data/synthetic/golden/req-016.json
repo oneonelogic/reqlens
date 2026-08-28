@@ -1,0 +1,27 @@
+{
+  "document": "req-016.pdf",
+  "tenant": "harborview",
+  "layout": "Compact",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Babatunde Oyelaran, MD",
+    "ordering_provider_npi": "1202732156",
+    "patient_last_name": "Pemberton",
+    "patient_first_name": "Rurik",
+    "patient_dob": "1963-09-14",
+    "patient_sex": "M",
+    "patient_mrn": "MRN272975",
+    "test_panel_code": "GXP-170",
+    "diagnosis_code": "Z14.1",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/24/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

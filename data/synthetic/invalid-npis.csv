@@ -1,0 +1,8 @@
+npi,why
+1271095969,check digit deliberately wrong
+1828459882,check digit deliberately wrong
+1391341954,check digit deliberately wrong
+1381868958,check digit deliberately wrong
+123456789,too short
+12345678901,too long
+1A34567890,non-numeric

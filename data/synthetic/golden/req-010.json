@@ -1,0 +1,27 @@
+{
+  "document": "req-010.pdf",
+  "tenant": "cedarpark",
+  "layout": "Compact",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Corinne Bellweather, MD",
+    "ordering_provider_npi": "1344210756",
+    "patient_last_name": "Jankowski",
+    "patient_first_name": "Lennart",
+    "patient_dob": "1995-02-18",
+    "patient_sex": "F",
+    "patient_mrn": "MRN846702",
+    "test_panel_code": "GXP-130",
+    "diagnosis_code": "D68.52",
+    "specimen_type": "Buccal Swab",
+    "collection_date": "08/04/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

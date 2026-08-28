@@ -1,0 +1,27 @@
+{
+  "document": "req-015.pdf",
+  "tenant": "bluffcreek",
+  "layout": "Gridded",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Hideo Nakamura, MD",
+    "ordering_provider_npi": "1440403628",
+    "patient_last_name": "Oyelowo",
+    "patient_first_name": "Thandiwe",
+    "patient_dob": "1991-12-15",
+    "patient_sex": "F",
+    "patient_mrn": "MRN401924",
+    "test_panel_code": "GXP-160",
+    "diagnosis_code": "Z00.00",
+    "specimen_type": "Plasma Streck Tube",
+    "collection_date": "08/15/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

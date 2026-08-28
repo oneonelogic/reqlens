@@ -1,0 +1,29 @@
+{
+  "document": "req-004.pdf",
+  "tenant": "harborview",
+  "layout": "Compact",
+  "defects": [
+    "InvalidNpi"
+  ],
+  "fields": {
+    "ordering_provider_name": "Babatunde Oyelaran, MD",
+    "ordering_provider_npi": "1381868958",
+    "patient_last_name": "Drachmann",
+    "patient_first_name": "Emeka",
+    "patient_dob": "2001-02-08",
+    "patient_sex": "M",
+    "patient_mrn": "MRN195119",
+    "test_panel_code": "GXP-110",
+    "diagnosis_code": "D68.51",
+    "specimen_type": "Saliva",
+    "collection_date": "08/16/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": false,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}

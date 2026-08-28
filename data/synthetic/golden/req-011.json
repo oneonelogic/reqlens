@@ -1,0 +1,27 @@
+{
+  "document": "req-011.pdf",
+  "tenant": "bluffcreek",
+  "layout": "TwoColumn",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Joris Achterberg, MD",
+    "ordering_provider_npi": "1173640222",
+    "patient_last_name": "Kettleborough",
+    "patient_first_name": "Xiomara",
+    "patient_dob": "1955-10-07",
+    "patient_sex": "M",
+    "patient_mrn": "MRN620528",
+    "test_panel_code": "GXP-131",
+    "diagnosis_code": "G30.0",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/25/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

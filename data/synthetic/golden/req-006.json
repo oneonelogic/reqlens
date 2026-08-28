@@ -1,0 +1,29 @@
+{
+  "document": "req-006.pdf",
+  "tenant": "cedarpark",
+  "layout": "Gridded",
+  "defects": [
+    "InactivePanel"
+  ],
+  "fields": {
+    "ordering_provider_name": "Theodora Fairbanks, MD",
+    "ordering_provider_npi": "1001839756",
+    "patient_last_name": "Fennimore",
+    "patient_first_name": "Rashid",
+    "patient_dob": "1998-01-08",
+    "patient_sex": "F",
+    "patient_mrn": "MRN148845",
+    "test_panel_code": "GXP-095",
+    "diagnosis_code": "G30.0",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/21/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": false,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}

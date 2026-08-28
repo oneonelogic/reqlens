@@ -1,0 +1,29 @@
+{
+  "document": "req-001.pdf",
+  "tenant": "northgate",
+  "layout": "Compact",
+  "defects": [
+    "MissingConsent"
+  ],
+  "fields": {
+    "ordering_provider_name": "Adaeze Okonkwo, MD",
+    "ordering_provider_npi": "1553479308",
+    "patient_last_name": "Ashgrove",
+    "patient_first_name": "Marguerite",
+    "patient_dob": "1989-03-13",
+    "patient_sex": "F",
+    "patient_mrn": "MRN782554",
+    "test_panel_code": "GXP-100",
+    "diagnosis_code": "Z31.440",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/25/2026",
+    "consent_obtained": false
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}

@@ -1,0 +1,21 @@
+code,name,specimen_type,active
+GXP-100,Hereditary Cancer Panel (47 genes),Whole Blood EDTA,true
+GXP-101,BRCA1/BRCA2 Sequencing and Deletion/Duplication,Whole Blood EDTA,true
+GXP-105,Lynch Syndrome Panel (5 genes),Whole Blood EDTA,true
+GXP-110,Comprehensive Carrier Screen (274 conditions),Saliva,true
+GXP-111,Cystic Fibrosis Carrier Screen (CFTR),Saliva,true
+GXP-112,Spinal Muscular Atrophy Carrier Screen (SMN1),Whole Blood EDTA,true
+GXP-120,Inherited Cardiomyopathy Panel (32 genes),Whole Blood EDTA,true
+GXP-121,Familial Hypercholesterolemia Panel,Whole Blood EDTA,true
+GXP-122,Thrombophilia Panel (Factor V Leiden and Prothrombin),Whole Blood EDTA,true
+GXP-130,Pharmacogenomics Core Panel (14 genes),Buccal Swab,true
+GXP-131,DPYD and UGT1A1 Chemotherapy Toxicity Panel,Whole Blood EDTA,true
+GXP-140,Whole Exome Sequencing - Proband,Whole Blood EDTA,true
+GXP-141,Whole Exome Sequencing - Trio,Whole Blood EDTA,true
+GXP-150,Chromosomal Microarray,Whole Blood EDTA,true
+GXP-160,Noninvasive Prenatal Screen (cfDNA),Plasma Streck Tube,true
+GXP-170,Alpha-1 Antitrypsin Genotype,Whole Blood EDTA,true
+GXP-171,Hereditary Hemochromatosis (HFE),Whole Blood EDTA,true
+GXP-180,Neuromuscular Disorders Panel (66 genes),Whole Blood EDTA,true
+GXP-090,Legacy Ashkenazi Jewish Carrier Panel,Whole Blood EDTA,false
+GXP-095,Legacy BRCA Founder Mutation Assay,Whole Blood EDTA,false
