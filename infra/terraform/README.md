@@ -15,7 +15,8 @@ terraform apply -var-file=terraform.tfvars
 
 `admin_cidr` has no default on purpose. It is the only address outside the VPC allowed to
 reach Postgres, and a careless value there is the difference between one laptop and the open
-internet. The variable refuses `0.0.0.0/0`.
+internet. The variable requires a single IPv4 host ending in `/32`; anything broader is
+refused, including ranges like `0.0.0.0/1` that quietly cover half the internet.
 
 Find your address with `curl -s https://checkip.amazonaws.com`. It changes when your network
 does; re-apply after a change or psql will hang.
