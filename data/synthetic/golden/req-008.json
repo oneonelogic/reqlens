@@ -1,0 +1,30 @@
+{
+  "document": "req-008.pdf",
+  "tenant": "harborview",
+  "layout": "TwoColumn",
+  "defects": [
+    "SpecimenMismatch"
+  ],
+  "fields": {
+    "ordering_provider_name": "Fionnuala Kilbride, MD",
+    "ordering_provider_npi": "1329986420",
+    "patient_last_name": "Hjalmarsson",
+    "patient_first_name": "Dmitri",
+    "patient_dob": "1987-09-27",
+    "patient_sex": "F",
+    "patient_mrn": "MRN815131",
+    "test_panel_code": "GXP-121",
+    "diagnosis_code": "Z00.00",
+    "specimen_type": "Buccal Swab",
+    "collection_date": "08/15/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": false,
+    "should_need_review": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "document": "req-017.pdf",
+  "tenant": "northgate",
+  "layout": "TwoColumn",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Ingrid Halvorsen, MD",
+    "ordering_provider_npi": "1746591985",
+    "patient_last_name": "Quintanilla",
+    "patient_first_name": "Perpetua",
+    "patient_dob": "1967-08-14",
+    "patient_sex": "F",
+    "patient_mrn": "MRN141111",
+    "test_panel_code": "GXP-171",
+    "diagnosis_code": "D56.1",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/22/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

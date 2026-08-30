@@ -1,0 +1,28 @@
+{
+  "document": "req-014.pdf",
+  "tenant": "cedarpark",
+  "layout": "TwoColumn",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Marisol Duquesne, CNM",
+    "ordering_provider_npi": "1490199209",
+    "patient_last_name": "Nordstrom",
+    "patient_first_name": "Cassius",
+    "patient_dob": "1958-10-10",
+    "patient_sex": "M",
+    "patient_mrn": "MRN650708",
+    "test_panel_code": "GXP-150",
+    "diagnosis_code": "I42.1",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/26/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

@@ -1,0 +1,43 @@
+code,description
+Z15.01,Genetic susceptibility to malignant neoplasm of breast
+Z15.02,Genetic susceptibility to malignant neoplasm of ovary
+Z15.03,Genetic susceptibility to malignant neoplasm of prostate
+Z15.09,Genetic susceptibility to other malignant neoplasm
+Z15.81,Genetic susceptibility to multiple endocrine neoplasia
+Z31.430,Encounter of female for testing for genetic disease carrier status
+Z31.440,Encounter of male for testing for genetic disease carrier status
+Z13.71,Encounter for nonprocreative screening for genetic disease carrier status
+Z13.79,Encounter for other screening for genetic and chromosomal anomalies
+Z14.1,Cystic fibrosis carrier
+Z14.8,Genetic carrier of other disease
+Z80.0,Family history of malignant neoplasm of digestive organs
+Z80.3,Family history of malignant neoplasm of breast
+Z80.41,Family history of malignant neoplasm of ovary
+Z80.42,Family history of malignant neoplasm of prostate
+Z84.81,Family history of carrier of genetic disease
+C50.911,Malignant neoplasm of unspecified site of right female breast
+C50.912,Malignant neoplasm of unspecified site of left female breast
+C56.1,Malignant neoplasm of right ovary
+C61,Malignant neoplasm of prostate
+C18.9,Malignant neoplasm of colon unspecified
+D05.11,Intraductal carcinoma in situ of right breast
+E11.9,Type 2 diabetes mellitus without complications
+E78.01,Familial hypercholesterolemia
+E84.0,Cystic fibrosis with pulmonary manifestations
+E84.9,Cystic fibrosis unspecified
+E70.0,Classical phenylketonuria
+E75.22,Gaucher disease
+E88.01,Alpha-1-antitrypsin deficiency
+D68.51,Activated protein C resistance
+D68.52,Prothrombin gene mutation
+D57.1,Sickle-cell disease without crisis
+D56.1,Beta thalassemia
+G71.11,Myotonic muscular dystrophy
+G12.21,Amyotrophic lateral sclerosis
+G30.0,Alzheimer disease with early onset
+I42.1,Obstructive hypertrophic cardiomyopathy
+I42.2,Other hypertrophic cardiomyopathy
+Q87.40,Marfan syndrome unspecified
+Q90.9,Down syndrome unspecified
+R94.31,Abnormal electrocardiogram
+Z00.00,Encounter for general adult medical examination without abnormal findings

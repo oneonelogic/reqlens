@@ -1,0 +1,28 @@
+{
+  "document": "req-013.pdf",
+  "tenant": "northgate",
+  "layout": "Compact",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Adaeze Okonkwo, MD",
+    "ordering_provider_npi": "1553479308",
+    "patient_last_name": "Mbeki",
+    "patient_first_name": "Ingeborg",
+    "patient_dob": "1986-04-26",
+    "patient_sex": "F",
+    "patient_mrn": "MRN288499",
+    "test_panel_code": "GXP-141",
+    "diagnosis_code": "G71.11",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/16/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

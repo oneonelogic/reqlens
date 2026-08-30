@@ -1,0 +1,30 @@
+{
+  "document": "req-009.pdf",
+  "tenant": "northgate",
+  "layout": "Gridded",
+  "defects": [
+    "MissingConsent"
+  ],
+  "fields": {
+    "ordering_provider_name": "Nikhil Ramaswamy, DO",
+    "ordering_provider_npi": "1193919655",
+    "patient_last_name": "Ibarra",
+    "patient_first_name": "Ayanna",
+    "patient_dob": "1961-10-19",
+    "patient_sex": "F",
+    "patient_mrn": "MRN769949",
+    "test_panel_code": "GXP-122",
+    "diagnosis_code": "C18.9",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/18/2026",
+    "consent_obtained": false
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}
