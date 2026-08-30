@@ -98,6 +98,14 @@ data "aws_iam_policy_document" "extract" {
     ]
   }
 
+  # Converse rejects a guardrailConfig the caller has no permission to apply, so this is
+  # required in addition to InvokeModel - the model grant alone is not enough.
+  statement {
+    sid       = "ApplyGuardrail"
+    actions   = ["bedrock:ApplyGuardrail"]
+    resources = [aws_bedrock_guardrail.main.guardrail_arn]
+  }
+
   statement {
     sid       = "ReadDbCredentials"
     actions   = ["secretsmanager:GetSecretValue"]
