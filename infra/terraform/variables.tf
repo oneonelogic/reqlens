@@ -25,10 +25,13 @@ variable "admin_cidr" {
   }
 
   # Rejecting only 0.0.0.0/0 was not enough: 0.0.0.0/1 and 128.0.0.0/1 between them cover the
-  # whole internet and both passed. Requiring /32 is the check that actually matches the intent.
+  # whole internet and both passed. Requiring a single IPv4 host is the check that matches the
+  # intent. IPv4 specifically, because the security group rule consumes this as cidr_ipv4 - a
+  # value like 2001:db8::/32 would satisfy a bare /32 suffix check and then fail deep in the
+  # apply with a far less helpful message.
   validation {
-    condition     = can(regex("/32$", var.admin_cidr))
-    error_message = "admin_cidr must be a single host, ending in /32. Find yours with: curl -s https://checkip.amazonaws.com"
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/32$", var.admin_cidr))
+    error_message = "admin_cidr must be a single IPv4 host ending in /32, for example 203.0.113.4/32. Find yours with: curl -s https://checkip.amazonaws.com"
   }
 }
 
