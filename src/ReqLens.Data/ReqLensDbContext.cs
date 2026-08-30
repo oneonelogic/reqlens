@@ -24,8 +24,29 @@ public class ReqLensDbContext(DbContextOptions<ReqLensDbContext> options) : DbCo
         {
             // Every read path filters on tenant first; the index matches that access pattern.
             e.HasIndex(o => new { o.TenantId, o.Status });
-            e.HasMany(o => o.Fields).WithOne().HasForeignKey(f => f.OrderId);
-            e.HasMany(o => o.Reviews).WithOne().HasForeignKey(r => r.OrderId);
+
+            e.HasOne<Tenant>()
+             .WithMany()
+             .HasForeignKey(o => o.TenantId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            // Children carry TenantId of their own so tenant-scoped reads never need a join.
+            // That denormalisation is only safe if the database refuses to let the two disagree,
+            // so the key they point at is (TenantId, Id), not Id alone: a field claiming ClinicA
+            // cannot attach to an order owned by ClinicB, because no such parent row exists.
+            e.HasAlternateKey(o => new { o.TenantId, o.Id });
+
+            e.HasMany(o => o.Fields)
+             .WithOne()
+             .HasForeignKey(f => new { f.TenantId, f.OrderId })
+             .HasPrincipalKey(o => new { o.TenantId, o.Id })
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasMany(o => o.Reviews)
+             .WithOne()
+             .HasForeignKey(r => new { r.TenantId, r.OrderId })
+             .HasPrincipalKey(o => new { o.TenantId, o.Id })
+             .OnDelete(DeleteBehavior.Restrict); // audit rows outlive nothing; never cascade them away
         });
 
         b.Entity<ExtractedField>(e =>
@@ -44,6 +65,11 @@ public class ReqLensDbContext(DbContextOptions<ReqLensDbContext> options) : DbCo
         {
             e.HasIndex(t => new { t.TenantId, t.Code }).IsUnique();
             e.Property(t => t.Code).HasMaxLength(32);
+
+            e.HasOne<Tenant>()
+             .WithMany()
+             .HasForeignKey(t => t.TenantId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
