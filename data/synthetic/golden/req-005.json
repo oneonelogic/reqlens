@@ -24,7 +24,10 @@
     "panel_code_present": true,
     "panel_in_catalog": false,
     "panel_active": null,
-    "specimen_matches": true,
-    "should_need_review": true
+    "specimen_matches": null,
+    "diagnosis_code_present": true,
+    "icd10_valid": true,
+    "should_need_review": true,
+    "review_reason": "panel code not in the catalogue"
   }
 }
