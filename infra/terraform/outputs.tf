@@ -42,3 +42,13 @@ output "lambda_vpc_config" {
     security_group_ids = [aws_security_group.lambda.id]
   }
 }
+
+output "guardrail_id" {
+  description = "Attach to Converse calls as guardrailIdentifier."
+  value       = aws_bedrock_guardrail.main.guardrail_id
+}
+
+output "guardrail_version" {
+  description = "Pinned version, so editing the guardrail cannot silently change a running pipeline."
+  value       = aws_bedrock_guardrail_version.main.version
+}
