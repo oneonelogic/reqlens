@@ -1,0 +1,28 @@
+{
+  "document": "req-018.pdf",
+  "tenant": "cedarpark",
+  "layout": "Gridded",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Theodora Fairbanks, MD",
+    "ordering_provider_npi": "1001839756",
+    "patient_last_name": "Rothschild-Bey",
+    "patient_first_name": "Anselm",
+    "patient_dob": "2019-10-26",
+    "patient_sex": "M",
+    "patient_mrn": "MRN958105",
+    "test_panel_code": "GXP-180",
+    "diagnosis_code": "E84.0",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/18/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

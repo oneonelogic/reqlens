@@ -1,0 +1,28 @@
+{
+  "document": "req-019.pdf",
+  "tenant": "bluffcreek",
+  "layout": "Compact",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Renata Vasquez-Lin, MD",
+    "ordering_provider_npi": "1524877085",
+    "patient_last_name": "Svendsen",
+    "patient_first_name": "Yevgenia",
+    "patient_dob": "1991-12-12",
+    "patient_sex": "M",
+    "patient_mrn": "MRN723241",
+    "test_panel_code": "GXP-100",
+    "diagnosis_code": "I42.1",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/23/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

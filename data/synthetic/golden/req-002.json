@@ -1,0 +1,30 @@
+{
+  "document": "req-002.pdf",
+  "tenant": "cedarpark",
+  "layout": "TwoColumn",
+  "defects": [
+    "AmbiguousPanel"
+  ],
+  "fields": {
+    "ordering_provider_name": "Marisol Duquesne, CNM",
+    "ordering_provider_npi": "1490199209",
+    "patient_last_name": "Boedecker",
+    "patient_first_name": "Tobias",
+    "patient_dob": "1957-09-04",
+    "patient_sex": "F",
+    "patient_mrn": "MRN483452",
+    "test_panel_code": null,
+    "diagnosis_code": "Z14.1",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/02/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": false,
+    "panel_in_catalog": null,
+    "panel_active": null,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}

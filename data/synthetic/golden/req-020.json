@@ -1,0 +1,28 @@
+{
+  "document": "req-020.pdf",
+  "tenant": "harborview",
+  "layout": "TwoColumn",
+  "defects": [],
+  "fields": {
+    "ordering_provider_name": "Fionnuala Kilbride, MD",
+    "ordering_provider_npi": "1329986420",
+    "patient_last_name": "Tremblay",
+    "patient_first_name": "Osric",
+    "patient_dob": "2006-02-27",
+    "patient_sex": "M",
+    "patient_mrn": "MRN198142",
+    "test_panel_code": "GXP-101",
+    "diagnosis_code": "D68.51",
+    "specimen_type": "Whole Blood EDTA",
+    "collection_date": "08/22/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": true,
+    "panel_active": true,
+    "specimen_matches": true,
+    "should_need_review": false
+  }
+}

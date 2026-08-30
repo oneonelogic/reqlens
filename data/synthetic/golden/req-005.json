@@ -1,0 +1,30 @@
+{
+  "document": "req-005.pdf",
+  "tenant": "northgate",
+  "layout": "TwoColumn",
+  "defects": [
+    "UnknownPanelCode"
+  ],
+  "fields": {
+    "ordering_provider_name": "Ingrid Halvorsen, MD",
+    "ordering_provider_npi": "1746591985",
+    "patient_last_name": "Eftekhari",
+    "patient_first_name": "Solveig",
+    "patient_dob": "1955-10-04",
+    "patient_sex": "F",
+    "patient_mrn": "MRN334083",
+    "test_panel_code": "GXP-999",
+    "diagnosis_code": "G30.0",
+    "specimen_type": "Saliva",
+    "collection_date": "08/20/2026",
+    "consent_obtained": true
+  },
+  "expected_validation": {
+    "npi_valid": true,
+    "panel_code_present": true,
+    "panel_in_catalog": false,
+    "panel_active": null,
+    "specimen_matches": true,
+    "should_need_review": true
+  }
+}
