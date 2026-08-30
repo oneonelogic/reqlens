@@ -107,6 +107,29 @@ data "aws_iam_policy_document" "extract" {
     ]
   }
 
+  # A conditional Allow only holds while nothing else grants inference. Attach a broader
+  # policy later - AmazonBedrockFullAccess, say - and unguarded calls succeed again, because
+  # Allows union. An explicit Deny cannot be out-voted by any other statement, so this is what
+  # actually makes the guardrail unskippable. StringNotEquals also matches when the key is
+  # absent, which is exactly the omitted-guardrailConfig case.
+  statement {
+    sid     = "DenyUnguardedInference"
+    effect  = "Deny"
+    actions = ["bedrock:InvokeModel", "bedrock:Converse"]
+
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/anthropic.*",
+      "arn:aws:bedrock:*::foundation-model/amazon.*",
+      "arn:aws:bedrock:${var.region}:${data.aws_caller_identity.current.account_id}:inference-profile/*"
+    ]
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "bedrock:GuardrailIdentifier"
+      values   = ["${aws_bedrock_guardrail.main.guardrail_arn}:${aws_bedrock_guardrail_version.main.version}"]
+    }
+  }
+
   # Converse rejects a guardrailConfig the caller has no permission to apply, so this is
   # required in addition to InvokeModel - the model grant alone is not enough.
   statement {
