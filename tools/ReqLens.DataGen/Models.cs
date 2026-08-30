@@ -81,4 +81,12 @@ public record Requisition
 
     /// <summary>The panel text actually printed - ambiguous on purpose in some documents.</summary>
     public required string PrintedPanel { get; init; }
+
+    /// <summary>
+    /// The panel code actually printed, which is what a correct extraction returns. Null when the
+    /// form names no code at all. This is deliberately NOT Panel.Code: on an out-of-catalog
+    /// document the form says GXP-999, and grading against the catalogue entry would penalise a
+    /// correct read and hide the very validation path the document exists to exercise.
+    /// </summary>
+    public required string? PrintedPanelCode { get; init; }
 }

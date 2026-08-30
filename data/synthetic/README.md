@@ -33,6 +33,16 @@ to tell those two apart.
 `expected_validation` is what the deterministic C# layer should conclude, independently of
 whatever the model said.
 
+Two things matter about how it grades:
+
+- `test_panel_code` is the code **printed on the form**, not the catalogue entry behind it. On
+  `req-005` the form says `GXP-999`, so that is the correct extraction even though no such panel
+  exists. Grading against the catalogue would penalise a correct read and hide the out-of-catalog
+  path the document exists to exercise.
+- `panel_in_catalog` and `panel_active` are `null`, not `false`, when the form names no code at
+  all. With nothing to look up the check is unanswerable, which is a different outcome from
+  looking it up and finding nothing. `panel_code_present` says which situation you are in.
+
 ## Defects
 
 Eleven documents are clean. Nine carry exactly one defect, so every branch of the review gate has

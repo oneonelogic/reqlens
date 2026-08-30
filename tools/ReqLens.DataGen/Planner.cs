@@ -47,11 +47,11 @@ public static class Planner
                 ? data.InvalidNpis[i % data.InvalidNpis.Count]
                 : provider.Npi;
 
-            var printedPanel = defect switch
+            var (printedPanel, printedPanelCode) = defect switch
             {
-                _ when defect.HasFlag(Defect.AmbiguousPanel)   => "BRCA panel",
-                _ when defect.HasFlag(Defect.UnknownPanelCode) => "GXP-999  Comprehensive Genome Profile",
-                _ => $"{panel.Code}  {panel.Name}"
+                _ when defect.HasFlag(Defect.AmbiguousPanel)   => ("BRCA panel", (string?)null),
+                _ when defect.HasFlag(Defect.UnknownPanelCode) => ("GXP-999  Comprehensive Genome Profile", "GXP-999"),
+                _ => ($"{panel.Code}  {panel.Name}", panel.Code)
             };
 
             var specimen = defect.HasFlag(Defect.SpecimenMismatch)
@@ -74,7 +74,8 @@ public static class Planner
                 Layout = (Layout)(i % 3),
                 Defects = defect,
                 PrintedNpi = printedNpi,
-                PrintedPanel = printedPanel
+                PrintedPanel = printedPanel,
+                PrintedPanelCode = printedPanelCode
             });
         }
         return result;

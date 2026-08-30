@@ -44,7 +44,7 @@ foreach (var r in plan)
             ["patient_dob"]            = r.Patient.Dob,
             ["patient_sex"]            = r.Patient.Sex,
             ["patient_mrn"]            = r.Patient.Mrn,
-            ["test_panel_code"]        = r.Defects.HasFlag(Defect.AmbiguousPanel) ? null : r.Panel.Code,
+            ["test_panel_code"]        = r.PrintedPanelCode,
             ["diagnosis_code"]         = r.Diagnosis?.Code,
             ["specimen_type"]          = r.SpecimenType,
             ["collection_date"]        = r.CollectionDate,
@@ -54,8 +54,11 @@ foreach (var r in plan)
         expected_validation = new
         {
             npi_valid          = !r.Defects.HasFlag(Defect.InvalidNpi),
-            panel_in_catalog   = !r.Defects.HasFlag(Defect.UnknownPanelCode),
-            panel_active       = !r.Defects.HasFlag(Defect.InactivePanel),
+            panel_code_present = r.PrintedPanelCode is not null,
+            // Null, not false: with no code on the form there is nothing to look up, and
+            // "unanswerable" is a different outcome from "looked it up and it was absent".
+            panel_in_catalog   = r.PrintedPanelCode is null ? null : (bool?)!r.Defects.HasFlag(Defect.UnknownPanelCode),
+            panel_active       = r.PrintedPanelCode is null ? null : (bool?)!r.Defects.HasFlag(Defect.InactivePanel),
             specimen_matches   = !r.Defects.HasFlag(Defect.SpecimenMismatch),
             should_need_review = r.Defects != Defect.None
         }

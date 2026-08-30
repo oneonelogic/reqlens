@@ -21,8 +21,9 @@
   },
   "expected_validation": {
     "npi_valid": true,
-    "panel_in_catalog": true,
-    "panel_active": true,
+    "panel_code_present": false,
+    "panel_in_catalog": null,
+    "panel_active": null,
     "specimen_matches": true,
     "should_need_review": true
   }
