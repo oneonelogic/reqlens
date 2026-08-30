@@ -12,7 +12,7 @@ using ReqLens.Data;
 namespace ReqLens.Data.Migrations
 {
     [DbContext(typeof(ReqLensDbContext))]
-    [Migration("20260830201634_InitialCreate")]
+    [Migration("20260830202223_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -58,8 +58,6 @@ namespace ReqLens.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("TenantId", "OrderId");
 
@@ -138,9 +136,9 @@ namespace ReqLens.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
                     b.HasIndex("TenantId", "At");
+
+                    b.HasIndex("TenantId", "OrderId");
 
                     b.ToTable("Reviews");
                 });
@@ -209,8 +207,18 @@ namespace ReqLens.Data.Migrations
                 {
                     b.HasOne("ReqLens.Domain.LabOrder", null)
                         .WithMany("Fields")
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("TenantId", "OrderId")
+                        .HasPrincipalKey("TenantId", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ReqLens.Domain.LabOrder", b =>
+                {
+                    b.HasOne("ReqLens.Domain.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -218,8 +226,18 @@ namespace ReqLens.Data.Migrations
                 {
                     b.HasOne("ReqLens.Domain.LabOrder", null)
                         .WithMany("Reviews")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("TenantId", "OrderId")
+                        .HasPrincipalKey("TenantId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ReqLens.Domain.TestCatalogEntry", b =>
+                {
+                    b.HasOne("ReqLens.Domain.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

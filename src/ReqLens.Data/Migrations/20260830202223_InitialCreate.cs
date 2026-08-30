@@ -12,6 +12,20 @@ namespace ReqLens.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Tenants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -27,20 +41,13 @@ namespace ReqLens.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tenants",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Slug = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                    table.UniqueConstraint("AK_Orders_TenantId_Id", x => new { x.TenantId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_Orders_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,6 +64,12 @@ namespace ReqLens.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TestCatalog", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TestCatalog_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,10 +90,10 @@ namespace ReqLens.Data.Migrations
                 {
                     table.PrimaryKey("PK_Fields", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Fields_Orders_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_Fields_Orders_TenantId_OrderId",
+                        columns: x => new { x.TenantId, x.OrderId },
                         principalTable: "Orders",
-                        principalColumn: "Id",
+                        principalColumns: new[] { "TenantId", "Id" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -103,17 +116,12 @@ namespace ReqLens.Data.Migrations
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Orders_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_Reviews_Orders_TenantId_OrderId",
+                        columns: x => new { x.TenantId, x.OrderId },
                         principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "TenantId", "Id" },
+                        onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Fields_OrderId",
-                table: "Fields",
-                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fields_TenantId_OrderId",
@@ -126,14 +134,14 @@ namespace ReqLens.Data.Migrations
                 columns: new[] { "TenantId", "Status" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_OrderId",
-                table: "Reviews",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_TenantId_At",
                 table: "Reviews",
                 columns: new[] { "TenantId", "At" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_TenantId_OrderId",
+                table: "Reviews",
+                columns: new[] { "TenantId", "OrderId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_Slug",
@@ -158,13 +166,13 @@ namespace ReqLens.Data.Migrations
                 name: "Reviews");
 
             migrationBuilder.DropTable(
-                name: "Tenants");
-
-            migrationBuilder.DropTable(
                 name: "TestCatalog");
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
         }
     }
 }
