@@ -39,9 +39,15 @@ Two things matter about how it grades:
   `req-005` the form says `GXP-999`, so that is the correct extraction even though no such panel
   exists. Grading against the catalogue would penalise a correct read and hide the out-of-catalog
   path the document exists to exercise.
-- `panel_in_catalog` and `panel_active` are `null`, not `false`, when the form names no code at
-  all. With nothing to look up the check is unanswerable, which is a different outcome from
-  looking it up and finding nothing. `panel_code_present` says which situation you are in.
+- Anything that depends on a catalogue row - `panel_active`, `specimen_matches` - is `null`
+  when no row resolves, either because the form names no code or because the code it names is in
+  no catalogue. Those are properties of a row; with no row there is nothing to ask. This is
+  different from looking something up and finding it absent, which is `false`.
+  `panel_code_present` and `panel_in_catalog` tell you which situation you are in.
+- `review_reason` names why review is expected. Some documents fail no deterministic check at
+  all: an unticked consent box and a margin note are both perfectly valid data. Without the
+  reason, an eval harness sees every check pass beside `should_need_review: true` and cannot tell
+  which path it was meant to exercise.
 
 ## Defects
 
