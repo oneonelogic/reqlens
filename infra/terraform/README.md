@@ -5,13 +5,20 @@ IAM role per Lambda.
 
 ## Running it
 
+Package the Lambdas first. Terraform uploads zips from `artifacts/` and hashes them to decide
+what changed, so a stale artifact deploys stale code - a function running yesterday's logic
+against today's configuration, which fails in a way that looks like a config bug.
+
 ```bash
+./scripts/package-lambdas.sh          # from the repo root
 cd infra/terraform
 cp example.tfvars terraform.tfvars     # then set admin_cidr to your own address
 terraform init
 terraform plan  -var-file=terraform.tfvars
 terraform apply -var-file=terraform.tfvars
 ```
+
+Re-run the package script and re-apply after any change to Lambda code.
 
 `admin_cidr` has no default on purpose. It is the only address outside the VPC allowed to
 reach Postgres, and a careless value there is the difference between one laptop and the open
@@ -20,6 +27,28 @@ refused, including ranges like `0.0.0.0/1` that quietly cover half the internet.
 
 Find your address with `curl -s https://checkip.amazonaws.com`. It changes when your network
 does; re-apply after a change or psql will hang.
+
+## The pipeline, once applied
+
+An upload to `scans/` starts everything:
+
+```
+s3://<bucket>/scans/*.pdf  --notification-->  reqlens-ingest
+                                                  |  Textract, order row, enqueue
+                                              reqlens-extract  <--SQS event source
+                                                  |  Bedrock behind the guardrail, validate, gate
+                                              RDS Postgres
+```
+
+The S3 notification is scoped to `scans/` with a `.pdf` suffix specifically so it cannot fire on
+the Ingest Lambda's own OCR output under `ocr/` and drive the pipeline in a loop.
+
+The SQS event source uses `batch_size = 1`. Batching would make one poisoned scan fail its whole
+batch, and per-document telemetry is the entire point of this pipeline.
+
+The Extract timeout (120s) sits deliberately under the queue's visibility timeout (180s). If it
+did not, a slow Bedrock call would be redelivered while the first attempt was still running and
+the document would be extracted twice.
 
 ## Shape
 

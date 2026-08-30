@@ -52,3 +52,16 @@ output "guardrail_version" {
   description = "Pinned version, so editing the guardrail cannot silently change a running pipeline."
   value       = aws_bedrock_guardrail_version.main.version
 }
+
+output "lambda_function_names" {
+  value = {
+    ingest  = aws_lambda_function.ingest.function_name
+    extract = aws_lambda_function.extract.function_name
+    api     = aws_lambda_function.api.function_name
+  }
+}
+
+output "upload_command" {
+  description = "Drop a synthetic requisition in and the pipeline starts."
+  value       = "aws s3 cp data/synthetic/requisitions/req-001.pdf s3://${aws_s3_bucket.requisitions.id}/scans/ --region ${var.region}"
+}
