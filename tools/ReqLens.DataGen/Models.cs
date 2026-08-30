@@ -1,7 +1,6 @@
 namespace ReqLens.DataGen;
 
-// Plain classes with settable properties: CsvHelper binds positional records to the
-// compiler-generated copy constructor and throws on the argument count.
+// Plain classes with settable properties, populated by DataSet's own CSV reader.
 public sealed class Tenant
 {
     public string Slug { get; set; } = "";

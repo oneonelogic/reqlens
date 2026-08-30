@@ -57,8 +57,15 @@ foreach (var r in plan)
             panel_code_present = r.PrintedPanelCode is not null,
             // Null, not false: with no code on the form there is nothing to look up, and
             // "unanswerable" is a different outcome from "looked it up and it was absent".
-            panel_in_catalog   = r.PrintedPanelCode is null ? null : (bool?)!r.Defects.HasFlag(Defect.UnknownPanelCode),
-            panel_active       = r.PrintedPanelCode is null ? null : (bool?)!r.Defects.HasFlag(Defect.InactivePanel),
+            panel_in_catalog   = r.PrintedPanelCode is null
+                ? null
+                : (bool?)!r.Defects.HasFlag(Defect.UnknownPanelCode),
+            // Activeness is a property of a catalogue row. No code, or a code that resolves to no
+            // row, means there is no row to ask - so null rather than a value borrowed from the
+            // entry the generator happened to pick.
+            panel_active       = r.PrintedPanelCode is null || r.Defects.HasFlag(Defect.UnknownPanelCode)
+                ? null
+                : (bool?)!r.Defects.HasFlag(Defect.InactivePanel),
             specimen_matches   = !r.Defects.HasFlag(Defect.SpecimenMismatch),
             should_need_review = r.Defects != Defect.None
         }
