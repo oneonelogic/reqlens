@@ -51,8 +51,11 @@ resource "aws_bedrock_guardrail" "main" {
   # simply not in the document. A hallucinated NPI with a valid check digit passes every
   # deterministic test there is; grounding is what notices it was never on the page.
   #
-  # Requires the Extract Lambda to send the OCR text as a grounding source in guardContent -
-  # the policy alone does nothing if the call does not mark its source.
+  # Requires the Extract Lambda to mark the OCR text in guardContent. Mark it as BOTH
+  # grounding_source AND guard_content: a block qualified only as a grounding source is used
+  # for the grounding score, and relying on that alone risks the OCR text - the untrusted part -
+  # skipping prompt-attack evaluation entirely. The extraction instruction is sent separately
+  # qualified as query.
   contextual_grounding_policy_config {
     filters_config {
       type      = "GROUNDING"

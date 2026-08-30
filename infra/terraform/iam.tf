@@ -83,12 +83,21 @@ data "aws_iam_policy_document" "extract" {
     resources = [aws_sqs_queue.extract.arn]
   }
 
+  # The guardrail is only a control if it cannot be skipped. Without this condition a future
+  # code path could omit guardrailConfig and still invoke the model, which downgrades the
+  # guardrail from an enforced boundary to a convention that holds until someone forgets.
   statement {
     sid = "InvokeModels"
     actions = [
       "bedrock:InvokeModel",
       "bedrock:Converse"
     ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "bedrock:GuardrailIdentifier"
+      values   = ["${aws_bedrock_guardrail.main.guardrail_arn}:${aws_bedrock_guardrail_version.main.version}"]
+    }
     # Foundation models and the inference profiles that front them. Scoped to Anthropic and
     # Amazon so the fallback chain can reach a second family without opening up everything.
     resources = [
