@@ -23,6 +23,9 @@
     "panel_in_catalog": true,
     "panel_active": true,
     "specimen_matches": true,
-    "should_need_review": false
+    "diagnosis_code_present": true,
+    "icd10_valid": true,
+    "should_need_review": false,
+    "review_reason": null
   }
 }

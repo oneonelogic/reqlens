@@ -24,6 +24,9 @@ var jsonOpts = new JsonSerializerOptions { WriteIndented = true };
 
 foreach (var r in plan)
 {
+    // A catalogue row resolves only when the form names a code AND that code is in the catalogue.
+    var rowResolves = r.PrintedPanelCode is not null && !r.Defects.HasFlag(Defect.UnknownPanelCode);
+
     new RequisitionDocument(r).GeneratePdf(Path.Combine(pdfDir, $"{r.Id}.pdf"));
 
     // The golden record is what a correct extraction looks like. Nulls are genuinely absent
@@ -51,23 +54,49 @@ foreach (var r in plan)
             ["consent_obtained"]       = r.ConsentObtained
         },
         // What the deterministic layer should conclude, independent of the model.
+        //
+        // Everything that depends on a catalogue row is derived from ONE decision - whether a row
+        // resolves at all - rather than each check reaching for the panel the generator happened
+        // to pick. Deriving them independently leaked that hidden panel three separate times.
         expected_validation = new
         {
-            npi_valid          = !r.Defects.HasFlag(Defect.InvalidNpi),
-            panel_code_present = r.PrintedPanelCode is not null,
+            npi_valid              = !r.Defects.HasFlag(Defect.InvalidNpi),
+
+            panel_code_present     = r.PrintedPanelCode is not null,
             // Null, not false: with no code on the form there is nothing to look up, and
             // "unanswerable" is a different outcome from "looked it up and it was absent".
-            panel_in_catalog   = r.PrintedPanelCode is null
+            panel_in_catalog       = r.PrintedPanelCode is null
                 ? null
                 : (bool?)!r.Defects.HasFlag(Defect.UnknownPanelCode),
-            // Activeness is a property of a catalogue row. No code, or a code that resolves to no
-            // row, means there is no row to ask - so null rather than a value borrowed from the
-            // entry the generator happened to pick.
-            panel_active       = r.PrintedPanelCode is null || r.Defects.HasFlag(Defect.UnknownPanelCode)
-                ? null
-                : (bool?)!r.Defects.HasFlag(Defect.InactivePanel),
-            specimen_matches   = !r.Defects.HasFlag(Defect.SpecimenMismatch),
-            should_need_review = r.Defects != Defect.None
+
+            // The three below are properties OF a catalogue row. No row, nothing to ask.
+            panel_active           = rowResolves ? (bool?)!r.Defects.HasFlag(Defect.InactivePanel) : null,
+            specimen_matches       = rowResolves ? (bool?)!r.Defects.HasFlag(Defect.SpecimenMismatch) : null,
+
+            diagnosis_code_present = r.Diagnosis is not null,
+            // Every diagnosis drawn for these documents comes from the committed ICD-10 list, so a
+            // present code is always a real one. Absent means there is nothing to validate.
+            icd10_valid            = r.Diagnosis is null ? null : (bool?)true,
+
+            should_need_review     = r.Defects != Defect.None,
+
+            // Why review is expected. Some documents fail no deterministic check at all - an
+            // unticked consent box and a margin note the schema cannot hold are both perfectly
+            // valid data - so without this an eval harness sees every check pass next to
+            // should_need_review: true and cannot tell which path it was supposed to exercise.
+            review_reason          = r.Defects switch
+            {
+                Defect.None             => null,
+                Defect.MissingConsent   => "consent checkbox not ticked",
+                Defect.AmbiguousPanel   => "panel named in prose, no code to resolve",
+                Defect.MissingDiagnosis => "no diagnosis code on the form",
+                Defect.InvalidNpi       => "NPI check digit fails",
+                Defect.UnknownPanelCode => "panel code not in the catalogue",
+                Defect.InactivePanel    => "panel is retired",
+                Defect.HandwrittenNote  => "free-text note the schema has nowhere to put",
+                Defect.SpecimenMismatch => "specimen type wrong for the panel",
+                _                       => r.Defects.ToString()
+            }
         }
     };
 

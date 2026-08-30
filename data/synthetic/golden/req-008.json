@@ -25,6 +25,9 @@
     "panel_in_catalog": true,
     "panel_active": true,
     "specimen_matches": false,
-    "should_need_review": true
+    "diagnosis_code_present": true,
+    "icd10_valid": true,
+    "should_need_review": true,
+    "review_reason": "specimen type wrong for the panel"
   }
 }
