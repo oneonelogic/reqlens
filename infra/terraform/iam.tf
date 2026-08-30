@@ -83,12 +83,21 @@ data "aws_iam_policy_document" "extract" {
     resources = [aws_sqs_queue.extract.arn]
   }
 
+  # The guardrail is only a control if it cannot be skipped. Without this condition a future
+  # code path could omit guardrailConfig and still invoke the model, which downgrades the
+  # guardrail from an enforced boundary to a convention that holds until someone forgets.
   statement {
     sid = "InvokeModels"
     actions = [
       "bedrock:InvokeModel",
       "bedrock:Converse"
     ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "bedrock:GuardrailIdentifier"
+      values   = ["${aws_bedrock_guardrail.main.guardrail_arn}:${aws_bedrock_guardrail_version.main.version}"]
+    }
     # Foundation models and the inference profiles that front them. Scoped to Anthropic and
     # Amazon so the fallback chain can reach a second family without opening up everything.
     resources = [
@@ -96,6 +105,37 @@ data "aws_iam_policy_document" "extract" {
       "arn:aws:bedrock:*::foundation-model/amazon.*",
       "arn:aws:bedrock:${var.region}:${data.aws_caller_identity.current.account_id}:inference-profile/*"
     ]
+  }
+
+  # A conditional Allow only holds while nothing else grants inference. Attach a broader
+  # policy later - AmazonBedrockFullAccess, say - and unguarded calls succeed again, because
+  # Allows union. An explicit Deny cannot be out-voted by any other statement, so this is what
+  # actually makes the guardrail unskippable. StringNotEquals also matches when the key is
+  # absent, which is exactly the omitted-guardrailConfig case.
+  statement {
+    sid     = "DenyUnguardedInference"
+    effect  = "Deny"
+    actions = ["bedrock:InvokeModel", "bedrock:Converse"]
+
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/anthropic.*",
+      "arn:aws:bedrock:*::foundation-model/amazon.*",
+      "arn:aws:bedrock:${var.region}:${data.aws_caller_identity.current.account_id}:inference-profile/*"
+    ]
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "bedrock:GuardrailIdentifier"
+      values   = ["${aws_bedrock_guardrail.main.guardrail_arn}:${aws_bedrock_guardrail_version.main.version}"]
+    }
+  }
+
+  # Converse rejects a guardrailConfig the caller has no permission to apply, so this is
+  # required in addition to InvokeModel - the model grant alone is not enough.
+  statement {
+    sid       = "ApplyGuardrail"
+    actions   = ["bedrock:ApplyGuardrail"]
+    resources = [aws_bedrock_guardrail.main.guardrail_arn]
   }
 
   statement {
