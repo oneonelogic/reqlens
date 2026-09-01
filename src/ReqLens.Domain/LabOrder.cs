@@ -20,6 +20,21 @@ public class LabOrder
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
+    /// <summary>
+    /// Why this order is in the queue, in the reviewer's language. Computed by the validation
+    /// layer at extraction time and stored, rather than recomputed on read: the reason has to
+    /// stay what it was when the decision was made, even after the catalogue changes underneath.
+    /// </summary>
+    public List<string> ReviewReasons { get; set; } = [];
+
+    /// <summary>
+    /// Set when the model chain produced nothing at all - a guardrail block, or every model in
+    /// the chain exhausted. The order still lands in the queue; a human just has no extracted
+    /// values to check, only the scan.
+    /// </summary>
+    public string? ExtractionFailure { get; set; }
+
     public List<ExtractedField> Fields { get; set; } = [];
     public List<ReviewAction> Reviews { get; set; } = [];
+    public List<ExtractionCall> Calls { get; set; } = [];
 }
