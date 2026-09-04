@@ -69,6 +69,16 @@ resource "aws_lambda_function" "ingest" {
   environment {
     variables = merge(local.lambda_common_env, {
       EXTRACT_QUEUE_URL = aws_sqs_queue.extract.url
+      OCR_PROVIDER      = var.ocr_provider
+      OCR_MODEL_ID      = var.ocr_model_id
+
+      # The OCR guardrail, not the extraction one - see bedrock.tf for why a transcription call
+      # cannot carry a contextual grounding policy. Set unconditionally even though Ingest is
+      # only a Bedrock caller under the "bedrock-vision" provider: its IAM policy denies
+      # inference without these, so a provider switch must not also need an environment change
+      # to stay callable.
+      OCR_GUARDRAIL_ID      = aws_bedrock_guardrail.ocr.guardrail_id
+      OCR_GUARDRAIL_VERSION = aws_bedrock_guardrail_version.ocr.version
     })
   }
 

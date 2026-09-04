@@ -57,6 +57,59 @@ data "aws_iam_policy_document" "ingest" {
     resources = ["*"] # Textract has no resource-level permissions for this action
   }
 
+  # Ingest becomes a Bedrock caller under the "bedrock-vision" OCR provider, which transcribes
+  # the page with a model because this account cannot call Textract. Narrower than the Extract
+  # role's grant on purpose: transcription uses one model and has no fallback chain, so there is
+  # no reason to reach the Amazon family from here.
+  statement {
+    sid = "TranscribeWithGuardrail"
+
+    actions = [
+      "bedrock:InvokeModel",
+      "bedrock:Converse"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "bedrock:GuardrailIdentifier"
+      values   = ["${aws_bedrock_guardrail.ocr.guardrail_arn}:${aws_bedrock_guardrail_version.ocr.version}"]
+    }
+
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/anthropic.*",
+      "arn:aws:bedrock:${var.region}:${data.aws_caller_identity.current.account_id}:inference-profile/*"
+    ]
+  }
+
+  # The same explicit Deny the Extract role carries, and it has to be repeated here rather than
+  # inherited: the original is scoped to a role, not to the account, so every new Bedrock caller
+  # arrives unguarded by default. Adding a second caller is what makes that visible. The
+  # account-wide version of this belongs in an SCP, which a single-account demo has no place to
+  # put.
+  statement {
+    sid     = "DenyUnguardedInference"
+    effect  = "Deny"
+    actions = ["bedrock:InvokeModel", "bedrock:Converse"]
+
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/anthropic.*",
+      "arn:aws:bedrock:*::foundation-model/amazon.*",
+      "arn:aws:bedrock:${var.region}:${data.aws_caller_identity.current.account_id}:inference-profile/*"
+    ]
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "bedrock:GuardrailIdentifier"
+      values   = ["${aws_bedrock_guardrail.ocr.guardrail_arn}:${aws_bedrock_guardrail_version.ocr.version}"]
+    }
+  }
+
+  statement {
+    sid       = "ApplyGuardrail"
+    actions   = ["bedrock:ApplyGuardrail"]
+    resources = [aws_bedrock_guardrail.ocr.guardrail_arn]
+  }
+
   statement {
     sid       = "EnqueueExtraction"
     actions   = ["sqs:SendMessage"]

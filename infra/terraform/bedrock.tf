@@ -78,3 +78,62 @@ resource "aws_bedrock_guardrail_version" "main" {
   guardrail_arn = aws_bedrock_guardrail.main.guardrail_arn
   description   = "Published for the Extract Lambda."
 }
+
+# A second guardrail, for the transcription call the "bedrock-vision" OCR provider makes.
+#
+# The extraction guardrail above cannot be used for that call, and the reason is structural
+# rather than a configuration detail worth tuning: its contextual grounding policy needs a
+# grounding source to score an answer against, and Converse rejects the request outright when one
+# is absent - "Grounding source, query and content to guard are required". At OCR time there is
+# no source text. Producing it is the entire point of the call. Grounding is a check on the
+# extraction step, where a source exists, and it stays there.
+#
+# What is left out matters as much as what is in:
+#
+#   * No PROMPT_ATTACK filter. The untrusted part of an OCR call is the page, and a page is an
+#     image or a PDF, not text a prompt-attack classifier can read. The only text in the request
+#     is this pipeline's own instruction - and at HIGH strength the filter blocks precisely that,
+#     scoring "transcribe this form, do not interpret" as an injection attempt. Screening the
+#     document happens one step later, on the transcript, where the extraction guardrail marks it
+#     guard_content and there is finally text to judge. A page cannot be screened before it has
+#     been read.
+#
+#   * No contextual grounding, for the reason above.
+#
+# What is left is the one check that does apply: identifiers with no business on a requisition. A
+# transcript containing an SSN or a card number means the wrong document was uploaded, and that
+# should stop at intake rather than reaching an extraction prompt.
+resource "aws_bedrock_guardrail" "ocr" {
+  name        = "${var.project}-ocr"
+  description = "Blocked-identifier checks for the vision OCR transcription call."
+
+  blocked_input_messaging   = "This document could not be read and has been routed for human review."
+  blocked_outputs_messaging = "This transcription could not be completed and has been routed for human review."
+
+  sensitive_information_policy_config {
+    # Same three as the extraction guardrail, and the same reasoning: names, dates of birth and
+    # record numbers are what the pipeline exists to read, so they pass. These three never belong
+    # on a test requisition at all.
+    pii_entities_config {
+      type   = "US_SOCIAL_SECURITY_NUMBER"
+      action = "BLOCK"
+    }
+
+    pii_entities_config {
+      type   = "CREDIT_DEBIT_CARD_NUMBER"
+      action = "BLOCK"
+    }
+
+    pii_entities_config {
+      type   = "US_BANK_ACCOUNT_NUMBER"
+      action = "BLOCK"
+    }
+  }
+
+  tags = { Name = "${var.project}-ocr" }
+}
+
+resource "aws_bedrock_guardrail_version" "ocr" {
+  guardrail_arn = aws_bedrock_guardrail.ocr.guardrail_arn
+  description   = "Published for the Ingest Lambda's vision OCR provider."
+}
