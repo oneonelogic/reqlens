@@ -1,16 +1,66 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject ReqLensApi Api
+@inject TenantContext Tenants
+@implements IDisposable
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-row px-4 d-flex align-items-center gap-3">
+            <label class="text-muted small mb-0" for="tenant">Clinic</label>
+            <select id="tenant" class="form-select form-select-sm w-auto"
+                    value="@Tenants.Slug"
+                    @onchange="OnTenantChanged">
+                @foreach (var tenant in Tenants.Available)
+                {
+                    <option value="@tenant.Slug">@tenant.Name</option>
+                }
+            </select>
+
+            @if (_loadFailed is not null)
+            {
+                <span class="text-danger small">@_loadFailed</span>
+            }
         </div>
 
         <article class="content px-4">
-            @Body
+            @if (Tenants.Slug is null && _loadFailed is null)
+            {
+                <p class="text-muted">Loading clinics...</p>
+            }
+            else
+            {
+                @Body
+            }
         </article>
     </main>
 </div>
+
+@code {
+    private string? _loadFailed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Tenants.Changed += StateHasChanged;
+
+        try
+        {
+            Tenants.Available = await Api.TenantsAsync();
+            Tenants.Slug = Tenants.Available.FirstOrDefault()?.Slug;
+
+            if (Tenants.Available.Count == 0)
+                _loadFailed = "No clinics are seeded. Run: dotnet run --project src/ReqLens.Cli -- seed";
+        }
+        catch (Exception ex)
+        {
+            _loadFailed = $"Could not reach the API: {ex.Message}";
+        }
+    }
+
+    private void OnTenantChanged(ChangeEventArgs e) => Tenants.Slug = e.Value?.ToString();
+
+    public void Dispose() => Tenants.Changed -= StateHasChanged;
+}

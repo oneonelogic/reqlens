@@ -1,7 +1,178 @@
-﻿@page "/"
+@page "/"
+@inject ReqLensApi Api
+@inject TenantContext Tenants
+@implements IDisposable
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Review queue</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+    <div>
+        <h1 class="h3 mb-1">Review queue</h1>
+        <p class="text-muted mb-0">
+            Orders the pipeline would not accept on its own. Every one of them names its reason.
+        </p>
+    </div>
 
-Welcome to your new app.
+    @if (_overturn is not null)
+    {
+        <div class="metric-card">
+            <div class="metric-value">@_overturn.FieldOverturnRate.ToString("P1")</div>
+            <div class="metric-label">field overturn rate, @_overturn.WindowDays d</div>
+            <div class="metric-sub">
+                @_overturn.FieldsCorrected corrected of @_overturn.FieldsReviewed reviewed
+                across @_overturn.OrdersReviewed order(s)
+            </div>
+        </div>
+    }
+</div>
+
+<ul class="nav nav-pills mb-3">
+    @foreach (var option in Filters)
+    {
+        <li class="nav-item">
+            <button class="nav-link @(option.Value == _status ? "active" : "")"
+                    @onclick="() => SetStatus(option.Value)">
+                @option.Key
+            </button>
+        </li>
+    }
+</ul>
+
+@if (_error is not null)
+{
+    <div class="alert alert-danger">@_error</div>
+}
+else if (_orders is null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else if (_orders.Count == 0)
+{
+    <div class="alert alert-light border">
+        Nothing here. Drop a requisition in and it will appear:
+        <code>dotnet run --project src/ReqLens.Cli -- ingest data/synthetic/requisitions/req-001.pdf --tenant @Tenants.Slug</code>
+    </div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Document</th>
+                <th>Status</th>
+                <th>Confidence</th>
+                <th>Why it is here</th>
+                <th>Model</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in _orders)
+            {
+                <tr class="clickable" @onclick="@(() => Open(order.Id))">
+                    <td class="fw-semibold">@order.DocumentName</td>
+                    <td><span class="badge @StatusClass(order.Status)">@order.Status</span></td>
+                    <td>
+                        @if (order.OverallConfidence is { } confidence)
+                        {
+                            <span class="badge @BandClass(confidence)">@confidence.ToString("P0")</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                    <td class="small">
+                        @if (order.ReviewReasons.Count == 0)
+                        {
+                            <span class="text-muted">Clean - accepted without review.</span>
+                        }
+                        else
+                        {
+                            @order.ReviewReasons[0]
+                            @if (order.ReviewReasons.Count > 1)
+                            {
+                                <span class="text-muted"> (+@(order.ReviewReasons.Count - 1) more)</span>
+                            }
+                        }
+                    </td>
+                    <td class="small text-muted">@ShortModel(order.ModelId)</td>
+                    <td class="small text-muted">@order.UpdatedAt.LocalDateTime.ToString("MMM d HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private static readonly Dictionary<string, string?> Filters = new()
+    {
+        ["Needs review"] = "NeedsReview",
+        ["Accepted"] = "Accepted",
+        ["Rejected"] = "Rejected",
+        ["All"] = null
+    };
+
+    private IReadOnlyList<OrderSummaryDto>? _orders;
+    private OverturnMetricsDto? _overturn;
+    private string? _status = "NeedsReview";
+    private string? _error;
+
+    protected override void OnInitialized() => Tenants.Changed += Reload;
+
+    protected override Task OnParametersSetAsync() => LoadAsync();
+
+    private void Reload() => _ = LoadAsync();
+
+    private async Task SetStatus(string? status)
+    {
+        _status = status;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        if (Tenants.Slug is not { } tenant) return;
+
+        try
+        {
+            _error = null;
+            _orders = null;
+            StateHasChanged();
+
+            _orders = await Api.OrdersAsync(tenant, _status);
+            _overturn = await Api.OverturnAsync(tenant);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+
+        StateHasChanged();
+    }
+
+    private void Open(Guid id) => Navigation.NavigateTo($"orders/{id}");
+
+    private static string StatusClass(string status) => status switch
+    {
+        "NeedsReview" => "text-bg-warning",
+        "Accepted" => "text-bg-success",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+
+    private static string BandClass(double confidence) => confidence switch
+    {
+        >= 0.90 => "text-bg-success",
+        >= 0.70 => "text-bg-warning",
+        _ => "text-bg-danger"
+    };
+
+    /// <summary>Model ids are long and the interesting part is at the end.</summary>
+    private static string ShortModel(string? modelId)
+        => string.IsNullOrEmpty(modelId) ? "-" : modelId.Split('.').Last().Split("-v")[0];
+
+    public void Dispose() => Tenants.Changed -= Reload;
+}

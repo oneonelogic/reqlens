@@ -1,0 +1,321 @@
+@page "/orders/{Id:guid}"
+@inject ReqLensApi Api
+@inject TenantContext Tenants
+@inject NavigationManager Navigation
+
+<PageTitle>@(_order?.Summary.DocumentName ?? "Order")</PageTitle>
+
+@if (_error is not null)
+{
+    <div class="alert alert-danger">@_error</div>
+}
+else if (_order is null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <div>
+            <a href="" class="small text-decoration-none">&larr; Back to queue</a>
+            <h1 class="h4 mb-0 mt-1">@_order.Summary.DocumentName</h1>
+            <div class="text-muted small">
+                <span class="badge @StatusClass(_order.Summary.Status)">@_order.Summary.Status</span>
+                @if (_order.Summary.OverallConfidence is { } confidence)
+                {
+                    <span class="ms-2">lowest field confidence @confidence.ToString("P0")</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (_order.ExtractionFailure is { } failure)
+    {
+        <div class="alert alert-danger">
+            <strong>No extraction.</strong> @failure
+        </div>
+    }
+
+    @if (_order.Summary.ReviewReasons.Count > 0)
+    {
+        <div class="alert alert-warning">
+            <div class="fw-semibold mb-1">Why this is in the queue</div>
+            <ul class="mb-0 ps-3">
+                @foreach (var reason in _order.Summary.ReviewReasons)
+                {
+                    <li>@reason</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h2 class="h6 text-uppercase text-muted">Extracted fields</h2>
+
+            <table class="table table-sm align-middle field-table">
+                <thead>
+                    <tr>
+                        <th style="width: 34%">Field</th>
+                        <th>Value</th>
+                        <th style="width: 15%">Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var field in _order.Fields)
+                    {
+                        <tr class="@RowClass(field)">
+                            <td>
+                                <div class="fw-semibold">@field.Label</div>
+                                @if (field.ValidationMessage is { } message)
+                                {
+                                    <div class="small @(field.ValidationState == "Invalid" ? "text-danger" : "text-muted")">
+                                        @message
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm"
+                                       value="@Edited(field)"
+                                       @onchange="@(e => Edit(field.Id, e.Value?.ToString()))" />
+
+                                @if (field.SourceText is { Length: > 0 } source)
+                                {
+                                    <div class="small text-muted mt-1">
+                                        on the page: <span class="source-text">@source</span>
+                                        @if (field.Grounded == false)
+                                        {
+                                            <span class="badge text-bg-danger ms-1">not found in OCR</span>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @BandClass(field.Band)">@field.Confidence.ToString("P0")</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6">Submit review</h3>
+
+                    <div class="mb-2">
+                        <label class="form-label small mb-1">Reviewer</label>
+                        <input class="form-control form-control-sm" @bind="_reviewer" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small mb-1">Note (optional)</label>
+                        <textarea class="form-control form-control-sm" rows="2" @bind="_note"></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-center">
+                        <button class="btn btn-success btn-sm" disabled="@_submitting" @onclick="ApproveAsync">
+                            Approve@(ChangeCount > 0 ? $" with {ChangeCount} correction(s)" : "")
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" disabled="@_submitting" @onclick="RejectAsync">
+                            Reject
+                        </button>
+
+                        @if (_result is not null)
+                        {
+                            <span class="small text-success">
+                                Recorded as @_result.Verdict, @_result.FieldsChanged field(s) changed.
+                            </span>
+                        }
+                    </div>
+
+                    <p class="form-text mb-0">
+                        The verdict is derived from what actually changed, not from which button is
+                        pressed: editing a field and approving is recorded as a correction, because
+                        that is what the overturn rate has to count.
+                    </p>
+                </div>
+            </div>
+
+            <details class="mb-3">
+                <summary class="h6 d-inline">Model calls (@_order.Calls.Count)</summary>
+                <table class="table table-sm mt-2 small">
+                    <thead>
+                        <tr><th>#</th><th>Model</th><th>Role</th><th>Latency</th><th>Tokens</th><th>Cost</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var call in _order.Calls)
+                        {
+                            <tr>
+                                <td>@call.Attempt</td>
+                                <td>@ShortModel(call.ModelId)</td>
+                                <td>@call.Role</td>
+                                <td>@call.LatencyMs ms</td>
+                                <td>@call.InputTokens in / @call.OutputTokens out</td>
+                                <td>$@call.EstimatedCostUsd.ToString("F4")</td>
+                                <td>
+                                    @if (call.GuardrailIntervened)
+                                    {
+                                        <span class="badge text-bg-danger">guardrail</span>
+                                    }
+                                    else if (!call.SchemaValid)
+                                    {
+                                        <span class="badge text-bg-warning">schema</span>
+                                    }
+                                </td>
+                            </tr>
+                            @if (call.FailureReason is { } reason)
+                            {
+                                <tr><td colspan="7" class="text-muted">@reason</td></tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </details>
+
+            <details>
+                <summary class="h6 d-inline">Audit trail (@_order.Reviews.Count)</summary>
+                @if (_order.Reviews.Count == 0)
+                {
+                    <p class="text-muted small mt-2">Nobody has touched this order yet.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled small mt-2">
+                        @foreach (var action in _order.Reviews)
+                        {
+                            <li class="border-start ps-2 mb-2">
+                                <div>
+                                    <strong>@action.ReviewerId</strong> &middot; @action.Verdict
+                                    &middot; <span class="text-muted">@action.At.LocalDateTime.ToString("MMM d HH:mm")</span>
+                                </div>
+                                @if (action.FieldName is { } name)
+                                {
+                                    <div>
+                                        @name:
+                                        <span class="text-decoration-line-through text-muted">@(action.ValueBefore ?? "(blank)")</span>
+                                        &rarr; <span>@(action.ValueAfter ?? "(blank)")</span>
+                                    </div>
+                                }
+                                @if (action.Note is { } note)
+                                {
+                                    <div class="fst-italic">@note</div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </details>
+        </div>
+
+        <div class="col-lg-6">
+            <h2 class="h6 text-uppercase text-muted">Original scan</h2>
+            @if (_scanUrl is not null)
+            {
+                <iframe class="scan-frame" src="@_scanUrl" title="Original requisition"></iframe>
+            }
+            else
+            {
+                <p class="text-muted">Loading the scan...</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private OrderDetailDto? _order;
+    private string? _scanUrl;
+    private string? _error;
+    private string _reviewer = "glenn";
+    private string? _note;
+    private bool _submitting;
+    private ReqLensApi.ReviewResult? _result;
+
+    private readonly Dictionary<Guid, string?> _edits = [];
+
+    private int ChangeCount => _order is null
+        ? 0
+        : _order.Fields.Count(f => _edits.TryGetValue(f.Id, out var v) && (v ?? "") != (f.Value ?? ""));
+
+    protected override async Task OnParametersSetAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        if (Tenants.Slug is not { } tenant) return;
+
+        try
+        {
+            _error = null;
+            _edits.Clear();
+
+            _order = await Api.OrderAsync(tenant, Id);
+            _scanUrl = await Api.ScanUrlAsync(tenant, Id);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private string? Edited(FieldDto field) => _edits.TryGetValue(field.Id, out var value) ? value : field.Value;
+
+    private void Edit(Guid fieldId, string? value) => _edits[fieldId] = value;
+
+    private Task ApproveAsync() => SubmitAsync("Approved");
+
+    private Task RejectAsync() => SubmitAsync("Rejected");
+
+    private async Task SubmitAsync(string verdict)
+    {
+        if (_order is null || Tenants.Slug is not { } tenant) return;
+
+        _submitting = true;
+
+        try
+        {
+            var corrections = _order.Fields
+                .Where(f => _edits.TryGetValue(f.Id, out var v) && (v ?? "") != (f.Value ?? ""))
+                .Select(f => new FieldCorrectionDto(f.Id, _edits[f.Id]))
+                .ToList();
+
+            _result = await Api.SubmitReviewAsync(tenant, Id,
+                new ReviewSubmissionDto(_reviewer, verdict, corrections, _note));
+
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+
+    private static string RowClass(FieldDto field) => field.ValidationState switch
+    {
+        "Invalid" => "row-invalid",
+        "Unverifiable" => "row-unverifiable",
+        _ => ""
+    };
+
+    private static string StatusClass(string status) => status switch
+    {
+        "NeedsReview" => "text-bg-warning",
+        "Accepted" => "text-bg-success",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+
+    private static string BandClass(string band) => band switch
+    {
+        "High" => "text-bg-success",
+        "Medium" => "text-bg-warning",
+        _ => "text-bg-danger"
+    };
+
+    private static string ShortModel(string? modelId)
+        => string.IsNullOrEmpty(modelId) ? "-" : modelId.Split('.').Last().Split("-v")[0];
+}
