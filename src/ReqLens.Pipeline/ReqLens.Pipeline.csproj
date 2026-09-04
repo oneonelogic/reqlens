@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReqLens.Ai\ReqLens.Ai.csproj" />
+    <ProjectReference Include="..\ReqLens.Data\ReqLens.Data.csproj" />
+    <ProjectReference Include="..\ReqLens.Domain\ReqLens.Domain.csproj" />
+    <ProjectReference Include="..\ReqLens.Ocr\ReqLens.Ocr.csproj" />
+    <ProjectReference Include="..\ReqLens.Validation\ReqLens.Validation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="4.0.102.4" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
