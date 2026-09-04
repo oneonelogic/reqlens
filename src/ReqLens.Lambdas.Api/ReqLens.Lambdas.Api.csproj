@@ -3,10 +3,18 @@
   <ItemGroup>
     <ProjectReference Include="..\ReqLens.Domain\ReqLens.Domain.csproj" />
     <ProjectReference Include="..\ReqLens.Data\ReqLens.Data.csproj" />
+    <ProjectReference Include="..\ReqLens.Validation\ReqLens.Validation.csproj" />
+    <ProjectReference Include="..\ReqLens.Contracts\ReqLens.Contracts.csproj" />
+
+    <!-- The console is served by this same app. One process to start for the demo, and no CORS
+         to configure, because the SPA and the API share an origin. -->
+    <ProjectReference Include="..\ReqLens.Web\ReqLens.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="2.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.6" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.102.4" />
   </ItemGroup>
 
   <PropertyGroup>
