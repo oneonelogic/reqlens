@@ -4,6 +4,12 @@
     <ProjectReference Include="..\ReqLens.Domain\ReqLens.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The code list ships inside the assembly so the Extract Lambda can answer "is that a real
+         ICD-10 code" without a database round trip. See Icd10CodeSet. -->
+    <EmbeddedResource Include="..\..\data\synthetic\icd10-codes.csv" LogicalName="ReqLens.Validation.icd10-codes.csv" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
