@@ -2,11 +2,14 @@
   <Folder Name="/src/">
     <Project Path="src/ReqLens.Ai/ReqLens.Ai.csproj" />
     <Project Path="src/ReqLens.Cli/ReqLens.Cli.csproj" />
+    <Project Path="src/ReqLens.Contracts/ReqLens.Contracts.csproj" />
     <Project Path="src/ReqLens.Data/ReqLens.Data.csproj" />
     <Project Path="src/ReqLens.Domain/ReqLens.Domain.csproj" />
     <Project Path="src/ReqLens.Lambdas.Api/ReqLens.Lambdas.Api.csproj" />
     <Project Path="src/ReqLens.Lambdas.Extract/ReqLens.Lambdas.Extract.csproj" />
     <Project Path="src/ReqLens.Lambdas.Ingest/ReqLens.Lambdas.Ingest.csproj" />
+    <Project Path="src/ReqLens.Ocr/ReqLens.Ocr.csproj" />
+    <Project Path="src/ReqLens.Pipeline/ReqLens.Pipeline.csproj" />
     <Project Path="src/ReqLens.Validation/ReqLens.Validation.csproj" />
     <Project Path="src/ReqLens.Web/ReqLens.Web.csproj" />
   </Folder>
