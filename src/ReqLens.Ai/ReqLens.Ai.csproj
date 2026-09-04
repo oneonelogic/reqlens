@@ -1,6 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <!-- The Document/JSON bridge and the chain internals are implementation detail, but they are
+         where the subtle bugs live, so the test project sees them. -->
+    <InternalsVisibleTo Include="ReqLens.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ReqLens.Domain\ReqLens.Domain.csproj" />
     <ProjectReference Include="..\ReqLens.Validation\ReqLens.Validation.csproj" />
   </ItemGroup>

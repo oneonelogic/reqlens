@@ -41,4 +41,27 @@ public sealed class ModelChainOptions
     public ModelChainEntry Primary
         => Models.FirstOrDefault(m => m.Role == ModelRole.Primary)
            ?? throw new InvalidOperationException("Model chain has no Primary entry.");
+
+    public ModelChainEntry? ForRole(ModelRole role) => Models.FirstOrDefault(m => m.Role == role);
+
+    /// <summary>
+    /// Reads the chain out of the MODEL_CHAIN environment variable, which Terraform populates.
+    /// </summary>
+    public static ModelChainOptions FromEnvironment()
+    {
+        var json = Environment.GetEnvironmentVariable("MODEL_CHAIN")
+                   ?? throw new InvalidOperationException("MODEL_CHAIN is not set.");
+
+        return FromJson(json);
+    }
+
+    public static ModelChainOptions FromJson(string json)
+        => System.Text.Json.JsonSerializer.Deserialize<ModelChainOptions>(json, SerializerOptions)
+           ?? throw new InvalidOperationException("MODEL_CHAIN did not deserialise to a model chain.");
+
+    private static readonly System.Text.Json.JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+    };
 }
