@@ -10,6 +10,7 @@ public class ReqLensDbContext(DbContextOptions<ReqLensDbContext> options) : DbCo
     public DbSet<ExtractedField> Fields => Set<ExtractedField>();
     public DbSet<ReviewAction> Reviews => Set<ReviewAction>();
     public DbSet<TestCatalogEntry> TestCatalog => Set<TestCatalogEntry>();
+    public DbSet<ExtractionCall> ExtractionCalls => Set<ExtractionCall>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -47,6 +48,23 @@ public class ReqLensDbContext(DbContextOptions<ReqLensDbContext> options) : DbCo
              .HasForeignKey(r => new { r.TenantId, r.OrderId })
              .HasPrincipalKey(o => new { o.TenantId, o.Id })
              .OnDelete(DeleteBehavior.Restrict); // audit rows outlive nothing; never cascade them away
+
+            e.HasMany(o => o.Calls)
+             .WithOne()
+             .HasForeignKey(c => new { c.TenantId, c.OrderId })
+             .HasPrincipalKey(o => new { o.TenantId, o.Id })
+             .OnDelete(DeleteBehavior.Cascade); // telemetry is about the order, not about the lab
+        });
+
+        b.Entity<ExtractionCall>(e =>
+        {
+            e.HasIndex(c => new { c.TenantId, c.At });
+            e.Property(c => c.ModelId).HasMaxLength(128);
+            e.Property(c => c.Role).HasMaxLength(32);
+
+            // Fractions of a cent per call, summed over a month. numeric, never a float:
+            // a cost total that drifts is a cost total nobody trusts.
+            e.Property(c => c.EstimatedCostUsd).HasPrecision(12, 6);
         });
 
         b.Entity<ExtractedField>(e =>
