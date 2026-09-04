@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReqLens.Domain\ReqLens.Domain.csproj" />
+
+    <!-- For GuardrailOptions. The vision OCR provider is a Bedrock caller like the extractor,
+         and both are bound by the same published guardrail, so they share one definition of it
+         rather than each carrying its own idea of which guardrail is current. -->
+    <ProjectReference Include="..\ReqLens.Ai\ReqLens.Ai.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.BedrockRuntime" Version="4.0.101.4" />
+    <PackageReference Include="AWSSDK.Textract" Version="4.0.100.11" />
+
+    <!-- Reads the text layer out of a born-digital PDF. See PdfTextLayerOcr for why that is a
+         development and eval path, not a substitute for OCR on a real scan. -->
+    <PackageReference Include="PdfPig" Version="0.1.16" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
