@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ReqLens.Domain\ReqLens.Domain.csproj" />
     <ProjectReference Include="..\ReqLens.Data\ReqLens.Data.csproj" />
+    <ProjectReference Include="..\ReqLens.Ocr\ReqLens.Ocr.csproj" />
+    <ProjectReference Include="..\ReqLens.Pipeline\ReqLens.Pipeline.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,6 +5,8 @@
     <ProjectReference Include="..\ReqLens.Validation\ReqLens.Validation.csproj" />
     <ProjectReference Include="..\ReqLens.Data\ReqLens.Data.csproj" />
     <ProjectReference Include="..\ReqLens.Ai\ReqLens.Ai.csproj" />
+    <ProjectReference Include="..\ReqLens.Ocr\ReqLens.Ocr.csproj" />
+    <ProjectReference Include="..\ReqLens.Pipeline\ReqLens.Pipeline.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -12,6 +14,7 @@
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="3.0.1" />
     <PackageReference Include="Amazon.Lambda.SQSEvents" Version="3.0.1" />
     <PackageReference Include="AWSSDK.S3" Version="4.0.102.4" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="4.0.101" />
   </ItemGroup>
 
   <PropertyGroup>
