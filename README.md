@@ -96,8 +96,8 @@ Lambdas target the `dotnet10` managed runtime on Amazon Linux 2023, on arm64.
 ## Running it
 
 ```bash
-cd infra/terraform && terraform apply -var-file=terraform.tfvars   # provision
-../../scripts/package-lambdas.sh                                   # before every apply
+./scripts/package-lambdas.sh                                       # before every apply
+(cd infra/terraform && terraform apply -var-file=terraform.tfvars)  # provision
 
 ./scripts/first-run.sh        # migrate, seed the clinics and catalogue, upload all 20 scans
 ./scripts/run-console.sh      # API + review console on http://localhost:5080
@@ -109,7 +109,7 @@ The CLI is the driver:
 dotnet run --project src/ReqLens.Cli -- migrate      # schema, without a password on a command line
 dotnet run --project src/ReqLens.Cli -- seed         # clinics and test catalogue
 dotnet run --project src/ReqLens.Cli -- ingest --all # upload; the deployed Lambdas take it from there
-dotnet run --project src/ReqLens.Cli -- process --all# or run the same pipeline locally
+dotnet run --project src/ReqLens.Cli -- process --all  # or run the same pipeline locally
 dotnet run --project src/ReqLens.Cli -- orders       # what came out
 dotnet run --project src/ReqLens.Cli -- eval         # grade the golden set
 ```
